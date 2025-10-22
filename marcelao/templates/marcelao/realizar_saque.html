@@ -1,0 +1,17 @@
+<h1>Realizar Saque: {{correntista.Nome}}</h1>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<p>Saldo atual:{{correntista.Saldo}}</p>
+<form action="{% url 'realizar_saque' correntista.CorrentistaID %}" method="post">
+    {% csrf_token %}
+    <label for="valor_saque">Realizar Saque:</label>
+    <input type="text" name="valor_saque" id="valor_saque" required>
+    <button type="submit">Sacar</button>
+</form>
+<a href="{% url 'main' %}">Voltar ao menu principal</a>

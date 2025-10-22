@@ -10,8 +10,12 @@
     <hr>
     <p>Menu de navegação:</p>
     <div class="buttons">
-        <a href="{% url 'realizar_deposito' 1 %}">Realizar Depósito</a>
-    
+        <!--O 1 vai ficar fixo por agora, será alterado quando implementarmos a rota de login-->
+        <a href="{% url 'realizar_deposito' 1  %}">Realizar Depósito</a> 
+        <br>
+        <a href="{% url 'realizar_saque' 1 %}">Realizar Saque </a>
+        <br>
+        <a href="{% url 'realizar_transferencia' 1  %}">Realizar Tranferencia</a>
     </div>
 </body>
 </html>

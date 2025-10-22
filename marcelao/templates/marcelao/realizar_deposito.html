@@ -1,1 +1,20 @@
-<h1>Oii, eu sou o batman</h1>
+<h1>Depósito para {{ correntista.NomeCorrentista }}</h1>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Saldo atual: {{ correntista.Saldo }}</p>
+
+<form action="{% url 'realizar_deposito' correntista.CorrentistaID %}" method="post">
+        {% csrf_token %}
+
+        <label for="valor_deposito">Valor do Depósito:</label>
+        <input type="text" name="valor_deposito" id="valor_deposito" required>
+        <button type="submit">Depositar</button>
+</form>
+<a href="{% url 'main' %}">Voltar ao menu principal</a>

@@ -1,0 +1,18 @@
+<h1>Realizar tranferencia</h1>
+
+{% if messages  %}
+    {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+{% endif %}
+<p>Saldo atual:{{correntista.Saldo}}</p>
+<form action="{% url 'realizar_transferencia' correntista.CorrentistaID %}" method="post">
+    {% csrf_token %}
+    <label for="valor_transferencia">Realizar Tranferencia:</label>
+    <input type="text" name="valor_transferencia" id="valor_transferencia" required>
+    <br>
+    <label for="beneficiario_id">Informe o ID do Beneficiario:</label>
+    <input type="text" name="beneficiario_id" id="beneficiario_id" required>
+    <button type="submit">Transferir</button>
+</form>
+<a href="{% url 'main' %}">Voltar ao menu principal</a>

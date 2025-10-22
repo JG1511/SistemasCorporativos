@@ -54,9 +54,10 @@ def realizar_deposito(request, correntista_id):
             with transaction.atomic(): # serve para garantir que todas as operações dentro do bloco sejam concluídas com sucesso ou nenhuma delas seja aplicada em caso de erro.
                 with connection.cursor() as cursor: # serve para criar um cursor de banco de dados que permite executar comandos SQL diretamente.
                     
-                    cursor.execute("SELECT sp_deposito(%s, %s)", [correntista_id, valor])
+                    cursor.execute("SELECT spDepositar(%s, %s)", [correntista_id, valor])
                     messages.success(request, 'Depósito realizado com sucesso!')
-                    return render(request, 'marcelao/realizar_deposito.html', context)
+                    # Usar PRG (Post-Redirect-Get) para recarregar o correntista e evitar reenvio de formulário
+                    return redirect('realizar_deposito', correntista_id=correntista_id)
 
         except Exception as e:
             messages.error(request, f'Erro ao realizar o depósito: {str(e)}')
@@ -79,22 +80,22 @@ def realizar_saque(request,correntista_id):
 
             if valor_de_saque <= 0:
                 messages.error(request, 'O valor do saque deve ser maior que zero.')
-                return render(request, 'marcelao/form_saque.html', context)
+                return render(request, 'marcelao/realizar_saque.html', context)
         except Exception:
             messages.error(request, 'Valor inválido. Por favor, insira um número válido.')
-            return render(request, 'marcelao/form_saque.html', context)
+            return render(request, 'marcelao/realizar_saque.html', context)
         try:
             with transaction.atomic(): # o transaction.atomic() serve para garantir que todas as operações dentro do bloco sejam concluídas com sucesso ou nenhuma delas seja aplicada em caso de erro.
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT sp_saque(%s,%s)", [correntista_id, valor_de_saque])
+                    cursor.execute("SELECT spSacar(%s,%s)", [correntista_id, valor_de_saque])
                     messages.success(request, 'Saque realizado com sucesso!')
-                    return render(request,'marcelao/form_saque.html', context)
+                    return redirect(request,'marcelao/realizar_saque.html', context)
                 
         except Exception as e: # captura qualquer exceção que possa ocorrer durante a execução do bloco try.
             messages.error(request, f'Erro ao realizar o saque: {str(e)}')
-            return render(request, 'marcelao/form_saque.html', context)
+            return render(request, 'marcelao/realizar_saque.html', context)
     else:
-        return render(request, 'marcelao/form_saque.html', context)
+        return render(request, 'marcelao/realizar_saque.html', context)
 
 def realizar_transferencia(request, correntista_id):
     correntista = Correntista.objects.get(CorrentistaID=correntista_id)
@@ -111,31 +112,31 @@ def realizar_transferencia(request, correntista_id):
 
             if valor_de_transferencia <= 0:
                 messages.error(request, 'O valor da transferência deve ser maior que zero.')
-                return render(request, 'marcelao/form_transferencia.html', context)
+                return render(request, 'marcelao/realizar_transferencia.html', context)
             if beneficiario_id <= 0:
                 messages.error(request, 'Beneficiário inválido.')
-                return render(request, 'marcelao/form_transferencia.html', context)
+                return render(request, 'marcelao/realizar_transferencia.html', context)
             
             if beneficiario_id == correntista_id:
                 messages.error(request, 'Não é possível transferir para si mesmo.')
-                return render(request, 'marcelao/form_transferencia.html', context)
+                return render(request, 'marcelao/realizar_transferencia.html', context)
         
         except Exception:
             messages.error(request, 'Valor inválido. Por favor, insira um número válido.')
-            return render(request, 'marcelao/form_transferencia.html', context)
+            return render(request, 'marcelao/realizar_transferencia.html', context)
         
         try:
             with transaction.atomic():
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT sp_transferencia(%s,%s,%s)", [correntista_id, beneficiario_id, valor_de_transferencia])
+                    cursor.execute("SELECT spTransferir(%s,%s,%s)", [correntista_id, valor_de_transferencia, beneficiario_id])
                     messages.success(request, 'Transferência realizada com sucesso!')
-                    return render(request, 'marcelao/form_transferencia.html', context)
+                    return render(request, 'marcelao/realizar_transferencia.html', context)
                 
         except Exception as e:
             messages.error(request, f'Erro ao realizar a transferência: {str(e)}')
-            return render(request, 'marcelao/form_transferencia.html', context)
+            return render(request, 'marcelao/realizar_transferencia.html', context)
 
-    return render(request, 'marcelao/form_transferencia.html', context)
+    return render(request, 'marcelao/realizar_transferencia.html', context)
 
 def pagamento(request,correntista_id):
     correntista = Correntista.objects.get(CorrentistaID=correntista_id)
@@ -166,7 +167,7 @@ def pagamento(request,correntista_id):
         try:
             with transaction.atomic():
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT sp_pagamento(%s,%s,%s)", [correntista_id, valor_de_pagamento, descricao])
+                    cursor.execute("SELECT spPagar(%s,%s,%s)", [correntista_id, valor_de_pagamento, descricao])
                     messages.success(request, 'Pagamento realizado com sucesso!')
                     return render(request, 'marcelao/form_pagamento.html', context)
         except Exception as e:
