@@ -7,16 +7,16 @@ from django.db import transaction, connection
 
 # Create your views here.
 
-def index(request):
+# def index(request):
     
-    #retorna todos os dados da vwExtratos
-    dados_extratos = VwExtrato.objects.all().order_by('-DataOperacao')
+#     #retorna todos os dados da vwExtratos
+#     dados_extratos = VwExtrato.objects.all().order_by('-DataOperacao')
 
-    #Convertendo para JSON
-    lista_extrato = list(dados_extratos.values())
+#     #Convertendo para JSON
+#     lista_extrato = list(dados_extratos.values())
 
-    #Retornando como JSON
-    return JsonResponse({'extrato': lista_extrato})
+#     #Retornando como JSON
+#     return JsonResponse({'extrato': lista_extrato})
 
 def extrato_por_correntista(request,correntista_id):
 
@@ -28,7 +28,7 @@ def extrato_por_correntista(request,correntista_id):
 
 def realizar_deposito(request, correntista_id):
 
-    correntista = Correntista.objects.get(id=correntista_id)
+    correntista = Correntista.objects.get(CorrentistaID=correntista_id)
     
     context = { 
         'correntista': correntista
@@ -43,11 +43,11 @@ def realizar_deposito(request, correntista_id):
             if valor <= 0:
 
                 messages.error(request, 'O valor do depósito deve ser maior que zero.')
-                return render(request, 'marcelao/form.html', context)
+                return render(request, 'marcelao/realizar_deposito.html', context)
         
         except Exception:
             messages.error(request, 'Valor inválido. Por favor, insira um número válido.')
-            return render(request, 'marcelao/form.html', context)
+            return render(request, 'marcelao/realizar_deposito.html', context)
 
 
         try:
@@ -56,17 +56,17 @@ def realizar_deposito(request, correntista_id):
                     
                     cursor.execute("SELECT sp_deposito(%s, %s)", [correntista_id, valor])
                     messages.success(request, 'Depósito realizado com sucesso!')
-                    return render(request, 'form.html', context)
+                    return render(request, 'marcelao/realizar_deposito.html', context)
 
         except Exception as e:
             messages.error(request, f'Erro ao realizar o depósito: {str(e)}')
-            return render(request, 'marcelao/form.html', context)
+            return render(request, 'marcelao/realizar_deposito.html', context)
 
     else:
-        return render(request, 'marcelao/form.html', context)
+        return render(request, 'marcelao/realizar_deposito.html', context)
     
 def realizar_saque(request,correntista_id):
-    correntista = Correntista.objects.get(id = correntista_id)
+    correntista = Correntista.objects.get(CorrentistaID=correntista_id)
 
     context = {
         'correntista': correntista
@@ -97,7 +97,7 @@ def realizar_saque(request,correntista_id):
         return render(request, 'marcelao/form_saque.html', context)
 
 def realizar_transferencia(request, correntista_id):
-    correntista = Correntista.objects.get(id=correntista_id)
+    correntista = Correntista.objects.get(CorrentistaID=correntista_id)
 
     context = {
         'correntista': correntista
@@ -134,3 +134,53 @@ def realizar_transferencia(request, correntista_id):
         except Exception as e:
             messages.error(request, f'Erro ao realizar a transferência: {str(e)}')
             return render(request, 'marcelao/form_transferencia.html', context)
+
+    return render(request, 'marcelao/form_transferencia.html', context)
+
+def pagamento(request,correntista_id):
+    correntista = Correntista.objects.get(CorrentistaID=correntista_id)
+
+    context = {
+        'correntista': correntista
+    }
+
+    if request.method == 'POST':
+        
+        try:
+            valor_str = request.POST.get('valor_pagamento', '0') 
+            valor_de_pagamento = Decimal(valor_str)
+            descricao = request.POST.get('descricao')
+
+            if valor_de_pagamento <= 0:
+                messages.error(request, 'O valor do pagamento deve ser maior que zero.')
+                return render(request, 'marcelao/form_pagamento.html', context)
+        
+            if not descricao:
+                messages.error(request, 'A descrição do pagamento não pode estar vazia.')
+                return render(request, 'marcelao/form_pagamento.html', context)
+        
+        except Exception:
+            messages.error(request, 'Valor inválido. Por favor, insira um número válido.')
+            return render(request, 'marcelao/form_pagamento.html', context)
+        
+        try:
+            with transaction.atomic():
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT sp_pagamento(%s,%s,%s)", [correntista_id, valor_de_pagamento, descricao])
+                    messages.success(request, 'Pagamento realizado com sucesso!')
+                    return render(request, 'marcelao/form_pagamento.html', context)
+        except Exception as e:
+            messages.error(request, f'Erro ao realizar o pagamento: {str(e)}')
+            return render(request, 'marcelao/form_pagamento.html', context)
+    
+    return render(request, 'marcelao/form_pagamento.html', context)
+
+
+def index(request):
+    return render(request, 'marcelao/main.html')
+
+
+        
+        
+        
+        

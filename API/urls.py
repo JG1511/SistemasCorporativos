@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from marcelao.views import index as main # importando a view index como main para mostrar na página inicial
 
 urlpatterns = [
+    path("", main, name="main"),
     path('marcelao/', include("marcelao.urls")),
     path('admin/', admin.site.urls),
 ]
