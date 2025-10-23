@@ -20,6 +20,7 @@ from marcelao.views import index as main # importando a view index como main par
 
 urlpatterns = [
     path("", main, name="main"),
+    path('usuarios/', include("usuarios.urls")),
     path('marcelao/', include("marcelao.urls")),
     path('admin/', admin.site.urls),
 ]

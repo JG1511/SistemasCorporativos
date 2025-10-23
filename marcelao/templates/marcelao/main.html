@@ -6,18 +6,18 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Bem-Vindo ao site do Banco</h1>
+    <h1>Bem-Vindo ao site do Banco, Sr(a) {{correntista.NomeCorrentista}}</h1>
     <hr>
     <p>Menu de navegação:</p>
     <div class="buttons">
         <!--O 1 vai ficar fixo por agora, será alterado quando implementarmos a rota de login-->
-        <a href="{% url 'realizar_deposito' 1  %}">Realizar Depósito</a> 
+        <a href="{% url 'realizar_deposito' correntista.CorrentistaID %}">Realizar Depósito</a>
         <br>
-        <a href="{% url 'realizar_saque' 1 %}">Realizar Saque </a>
+        <a href="{% url 'realizar_saque' correntista.CorrentistaID %}">Realizar Saque </a>
         <br>
-        <a href="{% url 'realizar_transferencia' 1  %}">Realizar Tranferencia</a>
+        <a href="{% url 'realizar_transferencia' correntista.CorrentistaID %}">Realizar Tranferencia</a>
         <br>
-        <a href="{% url 'pagamento' 1 %}">Realizar pagamento</a>
+        <a href="{% url 'pagamento' correntista.CorrentistaID %}">Realizar pagamento</a>
     </div>
 </body>
 </html>

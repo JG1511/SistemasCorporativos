@@ -178,7 +178,16 @@ def pagamento(request,correntista_id):
 
 
 def index(request):
-    return render(request, 'marcelao/main.html')
+    # Tenta obter o correntista armazenado na sessão
+    correntista = None
+    correntista_id = request.session.get('correntista_id')
+    if correntista_id:
+        try:
+            correntista = Correntista.objects.get(CorrentistaID=correntista_id)
+        except Correntista.DoesNotExist:
+            correntista = None
+
+    return render(request, 'marcelao/main.html', {'correntista': correntista})
 
 
         

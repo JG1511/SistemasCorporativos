@@ -8,7 +8,7 @@ from django.db import models
 
 class Correntista(models.Model):
 
-    CorrentistaID = models.IntegerField(primary_key=True) 
+    CorrentistaID = models.AutoField(primary_key=True) 
     NomeCorrentista = models.CharField(max_length=50)
     Saldo = models.DecimalField(max_digits=15, decimal_places=2) 
 
