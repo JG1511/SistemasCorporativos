@@ -154,27 +154,27 @@ def pagamento(request,correntista_id):
 
             if valor_de_pagamento <= 0:
                 messages.error(request, 'O valor do pagamento deve ser maior que zero.')
-                return render(request, 'marcelao/form_pagamento.html', context)
+                return render(request, 'marcelao/realizar_pagamento', context)
         
             if not descricao:
                 messages.error(request, 'A descrição do pagamento não pode estar vazia.')
-                return render(request, 'marcelao/form_pagamento.html', context)
+                return render(request, 'marcelao/realizar_pagamento.html', context)
         
         except Exception:
             messages.error(request, 'Valor inválido. Por favor, insira um número válido.')
-            return render(request, 'marcelao/form_pagamento.html', context)
+            return render(request, 'marcelao/realizar_pagamento', context)
         
         try:
             with transaction.atomic():
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT spPagar(%s,%s,%s)", [correntista_id, valor_de_pagamento, descricao])
                     messages.success(request, 'Pagamento realizado com sucesso!')
-                    return render(request, 'marcelao/form_pagamento.html', context)
+                    return render(request, 'marcelao/realizar_pagamento.html', context)
         except Exception as e:
             messages.error(request, f'Erro ao realizar o pagamento: {str(e)}')
-            return render(request, 'marcelao/form_pagamento.html', context)
+            return render(request, 'marcelao/realizar_pagamento.html', context)
     
-    return render(request, 'marcelao/form_pagamento.html', context)
+    return render(request, 'marcelao/realizar_pagamento.html', context)
 
 
 def index(request):

@@ -1,0 +1,22 @@
+<h1>Depósito para {{ correntista.NomeCorrentista }}</h1>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>Saldo atual: {{ correntista.Saldo }}</p>
+
+<form action="{% url 'pagamento' correntista.CorrentistaID %}" method="post">
+        {% csrf_token %}
+
+        <label for="valor_pagamento">Valor do Pagamento:</label>
+        <input type="text" name="valor_pagamento" id="valor_pagamento" required>
+        <label for="descricao">Descrição</label>
+        <input type="text " name="descricao" id="descricao" required>
+        <button type="submit">Pagar</button>
+</form>
+<a href="{% url 'main' %}">Voltar ao menu principal</a>
