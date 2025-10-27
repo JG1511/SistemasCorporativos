@@ -42,21 +42,23 @@ def user_signUp(request):
     
     if request.method == 'POST':
         username = request.POST.get('username')
+        valor_str = request.POST.get('valor')
+        valor =  int(valor_str)
 
         # for nome in correntista_all:
         #     if username == nome:
         #         error = 'Esse nome já existe'
         #         break
 
-        if not username:
-            error = 'Nome do usuário é obrigatorio'
+        if not username or not valor_str:
+            error = 'Todos os campos são obrigatório'
 
         if username in correntista_all:
             error = 'Esse nome já existe'
         
         if error is None:
             try:
-                correntista = Correntista(NomeCorrentista = username)
+                correntista = Correntista(NomeCorrentista = username, Saldo = valor )
                 correntista.save()
                 return render(request, 'login.html')
             except Exception as e:
